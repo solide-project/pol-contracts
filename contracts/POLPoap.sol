@@ -34,12 +34,17 @@ contract POLPoap is
         address account,
         uint256 id,
         bytes memory data,
+        string memory verification,
         bytes memory signature
     ) public hasPoap(id, account) whenNotPaused(id) {
-        require(validateSignature(account, id, signature), "Unathourise");
+        require(
+            validateSignature(account, id, signature),
+            "Unauthorized signature"
+        );
 
         mintTracker[account][id] = block.timestamp;
         ownedTokenIds[account].push(id);
+        verifications[account][id] = verification;
         _mint(account, id, 1, data);
     }
 
@@ -84,6 +89,18 @@ contract POLPoap is
         require(mintTracker[_account][_id] == 0, "Poap minted");
         _;
     }
+
+    // ********** IPFS Verification  ********** //
+    mapping(address => mapping(uint256 => string)) public verifications;
+
+    function setVerification(
+        address account,
+        uint256 id,
+        string memory verification
+    ) public onlyOwner {
+        verifications[account][id] = verification;
+    }
+
 
     // ********** Pausible Token ********** //
     function pause(uint256 _id) external onlyOwner {
