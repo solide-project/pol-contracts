@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity >=0.8.25;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -91,7 +91,7 @@ contract POLPoap is
     }
 
     // ********** IPFS Verification  ********** //
-    mapping(address => mapping(uint256 => string)) public verifications;
+    mapping(address => mapping(uint256 => string)) private verifications;
 
     function setVerification(
         address account,
@@ -101,6 +101,12 @@ contract POLPoap is
         verifications[account][id] = verification;
     }
 
+    function getVerification(
+        address account,
+        uint256 id
+    ) public view returns(string memory) {
+        return verifications[account][id];
+    }
 
     // ********** Pausible Token ********** //
     function pause(uint256 _id) external onlyOwner {
